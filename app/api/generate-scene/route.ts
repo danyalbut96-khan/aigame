@@ -83,7 +83,7 @@ export async function POST(req: Request) {
           'X-Title': 'AI Game Builder' 
         },
         body: JSON.stringify({
-          model: 'google/gemini-1.5-flash', // Using Gemini 1.5 Flash as it is fast, highly reliable, and very cheap/free on OpenRouter
+          model: 'anthropic/claude-sonnet-4.5', // Fast, reliable, and available in your list
           messages: [
             { role: 'system', content: SYSTEM_PROMPT + strictAddendum },
             { role: 'user', content: `Create a 3D game scene: ${prompt}` }
