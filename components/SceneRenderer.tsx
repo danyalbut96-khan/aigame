@@ -79,7 +79,7 @@ export default function SceneRenderer({ scene, onReady }: SceneRendererProps) {
     transformControl.addEventListener('dragging-changed', (event) => {
       controls.enabled = !event.value;
     });
-    threeScene.add(transformControl);
+    threeScene.add(transformControl as any);
 
     // Raycaster for selection
     const raycaster = new THREE.Raycaster();
@@ -104,7 +104,7 @@ export default function SceneRenderer({ scene, onReady }: SceneRendererProps) {
         transformControl.attach(object);
       } else {
         // Detach if clicking empty space (ignore clicks on TransformControls itself)
-        const tcIntersects = raycaster.intersectObject(transformControl, true);
+        const tcIntersects = raycaster.intersectObject(transformControl as any, true);
         if (tcIntersects.length === 0) {
            transformControl.detach();
         }

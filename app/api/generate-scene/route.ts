@@ -37,8 +37,7 @@ Rules:
 - All x,z positions within -10 to 10 range.
 - Y=0 for ground-level objects (enemies, trees, rocks, players, horses, animals).
 - texture field must be one of: "grass","sand","stone","wood","metal","lava","snow", or the string "null".
-- All rotation values are in degrees.
-- Return ONLY the JSON, nothing else.\`;
+- Return ONLY the JSON, nothing else.`;
 
 function extractJSON(text: string): string {
   // Strip markdown code blocks if present
