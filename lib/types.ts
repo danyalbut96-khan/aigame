@@ -10,7 +10,11 @@ export type ObjectType =
   | 'tree'
   | 'rock'
   | 'enemy'
-  | 'player';
+  | 'player'
+  | 'horse'
+  | 'sword'
+  | 'animal'
+  | 'plant';
 
 export interface SceneObject {
   id: string;

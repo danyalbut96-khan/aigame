@@ -10,14 +10,14 @@ const SYSTEM_PROMPT = `You are a 3D game scene data generator. Parse the user's 
 JSON Schema (follow exactly):
 {
   "scene": {
-    "background": "#hex",
+    "background": "#hex (or transparent if null)",
     "fog": { "color": "#hex", "near": number, "far": number } | null,
     "ambientLight": { "color": "#hex", "intensity": number },
     "directionalLight": { "color": "#hex", "intensity": number, "position": [x,y,z] },
     "objects": [
       {
         "id": "unique_id_string",
-        "type": "box|sphere|cylinder|cone|plane|castle|tree|rock|enemy|player",
+        "type": "box|sphere|cylinder|cone|plane|castle|tree|rock|enemy|player|horse|sword|animal|plant",
         "label": "Display Name",
         "position": [x, y, z],
         "rotation": [x, y, z],
@@ -27,25 +27,18 @@ JSON Schema (follow exactly):
       }
     ]
   },
-  "description": "One sentence summary of the scene"
+  "description": "One sentence summary"
 }
 
 Rules:
-- Ground/floor plane is ALWAYS first object (type: "plane", position: [0, -0.5, 0], scale: [1,1,1])
-- Spread objects naturally — no stacking, varied x/z positions
-- All x,z positions within -10 to 10 range
-- Y=0 for ground-level objects (enemies, trees, rocks, players)
-- Desert: sandy yellow/brown tones, sand texture on ground, no trees, add rocks and dunes
-- Forest: greens, trees everywhere, grass texture on ground
-- Space: dark background, metallic objects, no fog, emit effects
-- Dungeon: stone texture, dark colors, enemies, torches (cylinders with orange tops)
-- Enemy objects: type "enemy", red/dark colors
-- Player: type "player", bright colors, center-front position
-- Castle: center-back, large scale [2,2,2] or bigger
-- Max 15 objects total for performance
-- texture field must be one of: "grass","sand","stone","wood","metal","lava","snow", or the string "null"
-- All rotation values are in degrees
-- Return ONLY the JSON, nothing else`;
+- If the user asks for a FULL SCENE: Ground/floor plane is ALWAYS first object (type: "plane", position: [0, -0.5, 0], scale: [1,1,1]).
+- If the user asks for INDIVIDUAL ASSETS (e.g., "a horse", "a sword", "a tree"): DO NOT generate a floor plane. DO NOT generate background (set background to "#1e1e1e"). ONLY return the requested assets.
+- Spread objects naturally — no stacking, varied x/z positions.
+- All x,z positions within -10 to 10 range.
+- Y=0 for ground-level objects (enemies, trees, rocks, players, horses, animals).
+- texture field must be one of: "grass","sand","stone","wood","metal","lava","snow", or the string "null".
+- All rotation values are in degrees.
+- Return ONLY the JSON, nothing else.
 
 function extractJSON(text: string): string {
   // Strip markdown code blocks if present

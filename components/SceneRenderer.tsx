@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { buildObject } from '@/lib/sceneHelpers';
 import type { GeneratedScene } from '@/lib/types';
 
@@ -73,6 +74,54 @@ export default function SceneRenderer({ scene, onReady }: SceneRendererProps) {
     controls.maxPolarAngle = Math.PI / 2.1;
     controlsRef.current = controls;
 
+    // Transform controls
+    const transformControl = new TransformControls(camera, renderer.domElement);
+    transformControl.addEventListener('dragging-changed', (event) => {
+      controls.enabled = !event.value;
+    });
+    threeScene.add(transformControl);
+
+    // Raycaster for selection
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const onPointerDown = (event: MouseEvent) => {
+      // Don't select if clicking on UI
+      if (event.target !== renderer.domElement) return;
+
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      const intersects = raycaster.intersectObjects(objectsGroupRef.current!.children, true);
+      if (intersects.length > 0) {
+        let object = intersects[0].object;
+        while (object.parent && object.parent !== objectsGroupRef.current) {
+          object = object.parent;
+        }
+        transformControl.attach(object);
+      } else {
+        // Detach if clicking empty space (ignore clicks on TransformControls itself)
+        const tcIntersects = raycaster.intersectObject(transformControl, true);
+        if (tcIntersects.length === 0) {
+           transformControl.detach();
+        }
+      }
+    };
+    renderer.domElement.addEventListener('pointerdown', onPointerDown);
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      switch (event.key.toLowerCase()) {
+        case 't': transformControl.setMode('translate'); break;
+        case 'r': transformControl.setMode('rotate'); break;
+        case 's': transformControl.setMode('scale'); break;
+        case 'escape': transformControl.detach(); break;
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+
     // Animate
     const animate = () => {
       frameRef.current = requestAnimationFrame(animate);
@@ -96,7 +145,10 @@ export default function SceneRenderer({ scene, onReady }: SceneRendererProps) {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('keydown', onKeyDown);
+      renderer.domElement.removeEventListener('pointerdown', onPointerDown);
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
+      transformControl.dispose();
       controls.dispose();
       renderer.dispose();
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);

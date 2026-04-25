@@ -1,44 +1,42 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function Header() {
-  const [glitch, setGlitch] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setGlitch(true), 300);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
-    <header className="relative z-10 border-b border-cyan-500/20 bg-black/60 backdrop-blur-sm">
-      <div className="scanline-overlay absolute inset-0 pointer-events-none" />
-      <div className="max-w-screen-2xl mx-auto px-4 py-3 flex items-center justify-between">
+    <header className="relative z-10 border-b border-[var(--panel-border)] bg-[var(--panel-bg)]">
+      <div className="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
+        
+        {/* Left Side: Logo */}
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="w-8 h-8 border-2 border-cyan-400 rotate-45 flex items-center justify-center animate-pulse-slow">
-              <div className="w-3 h-3 bg-cyan-400 rotate-45" />
-            </div>
+          <div className="w-6 h-6 bg-[var(--accent)] rounded-sm flex items-center justify-center shadow-sm">
+            <div className="w-2 h-2 bg-[var(--bg-color)] rounded-full" />
           </div>
-          <h1
-            className={`text-xl font-orbitron font-black tracking-widest text-cyan-400 uppercase select-none ${
-              glitch ? 'glitch-text' : 'opacity-0'
-            }`}
-            data-text="AI GAME SCENE BUILDER"
-          >
-            AI GAME SCENE BUILDER
+          <h1 className="text-lg font-bold tracking-wide text-[var(--text-main)]">
+            AI Studio Builder
           </h1>
         </div>
 
+        {/* Middle: Navigation */}
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[var(--text-muted)]">
+          <Link href="/" className="text-[var(--text-main)] hover:text-white transition-colors">
+            Home
+          </Link>
+          <Link href="/about" className="hover:text-white transition-colors">
+            About
+          </Link>
+          <Link href="/privacy" className="hover:text-white transition-colors">
+            Privacy Policy
+          </Link>
+        </nav>
+
+        {/* Right Side: Status */}
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-cyan-500/60">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span>SYSTEM ONLINE</span>
-          </div>
-          <div className="text-xs font-mono text-cyan-500/40 border border-cyan-500/20 px-2 py-1 rounded">
-            v1.0.0
+          <div className="text-xs text-[var(--text-muted)] bg-[var(--bg-color)] border border-[var(--panel-border)] px-3 py-1.5 rounded-md shadow-inner">
+            v1.1.0
           </div>
         </div>
+
       </div>
     </header>
   );

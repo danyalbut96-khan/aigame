@@ -247,6 +247,60 @@ function buildPlayerGroup(obj: SceneObject): THREE.Group {
   return group;
 }
 
+function buildSwordGroup(obj: SceneObject): THREE.Group {
+  const group = new THREE.Group();
+  
+  // Blade
+  const bladeMat = buildMaterial(obj.color || '#cccccc', 'metal');
+  const bladeGeo = new THREE.BoxGeometry(0.1, 1.2, 0.02);
+  const blade = new THREE.Mesh(bladeGeo, bladeMat);
+  blade.position.set(0, 0.8, 0);
+  group.add(blade);
+  
+  // Handle
+  const handleMat = buildMaterial('#8B4513', 'wood');
+  const handleGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.4);
+  const handle = new THREE.Mesh(handleGeo, handleMat);
+  handle.position.set(0, 0.2, 0);
+  group.add(handle);
+  
+  // Guard
+  const guardMat = buildMaterial('#FFD700', 'metal');
+  const guardGeo = new THREE.BoxGeometry(0.4, 0.05, 0.05);
+  const guard = new THREE.Mesh(guardGeo, guardMat);
+  guard.position.set(0, 0.4, 0);
+  group.add(guard);
+
+  return group;
+}
+
+function buildAnimalGroup(obj: SceneObject): THREE.Group {
+  const group = new THREE.Group();
+  const mat = buildMaterial(obj.color || '#8B4513', null);
+  
+  // Body
+  const bodyGeo = new THREE.BoxGeometry(0.6, 0.5, 1.2);
+  const body = new THREE.Mesh(bodyGeo, mat);
+  body.position.set(0, 0.7, 0);
+  group.add(body);
+  
+  // Head
+  const headGeo = new THREE.BoxGeometry(0.4, 0.4, 0.5);
+  const head = new THREE.Mesh(headGeo, mat);
+  head.position.set(0, 1.1, 0.7);
+  group.add(head);
+  
+  // Legs
+  const legGeo = new THREE.CylinderGeometry(0.08, 0.06, 0.6);
+  [[-0.2, 0.4], [0.2, 0.4], [-0.2, -0.4], [0.2, -0.4]].forEach(([x, z]) => {
+    const leg = new THREE.Mesh(legGeo, mat);
+    leg.position.set(x, 0.3, z);
+    group.add(leg);
+  });
+  
+  return group;
+}
+
 // ─── Main Object Builder ──────────────────────────────────────────────────────
 
 export function buildObject(obj: SceneObject): THREE.Object3D {
@@ -257,6 +311,7 @@ export function buildObject(obj: SceneObject): THREE.Object3D {
       mesh = buildCastleGroup(obj);
       break;
     case 'tree':
+    case 'plant':
       mesh = buildTreeGroup(obj);
       break;
     case 'enemy':
@@ -264,6 +319,13 @@ export function buildObject(obj: SceneObject): THREE.Object3D {
       break;
     case 'player':
       mesh = buildPlayerGroup(obj);
+      break;
+    case 'horse':
+    case 'animal':
+      mesh = buildAnimalGroup(obj);
+      break;
+    case 'sword':
+      mesh = buildSwordGroup(obj);
       break;
     case 'sphere': {
       const geo = new THREE.SphereGeometry(0.5, 32, 32);
