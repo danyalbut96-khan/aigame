@@ -61,12 +61,12 @@ export default function PromptPanel({ onGenerate, isLoading, scene, error }: Pro
   return (
     <div className="flex flex-col gap-4 h-full">
       {/* Section title */}
-      <div className="flex items-center gap-2">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-cyan-500/30" />
-        <span className="text-xs font-mono tracking-widest text-cyan-500/60 uppercase">
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#00f5ff]" />
+        <span className="text-sm font-orbitron font-bold tracking-widest text-cyan-400 uppercase drop-shadow-[0_0_5px_rgba(0,245,255,0.5)]">
           Describe Your Scene
         </span>
-        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-cyan-500/30" />
+        <div className="h-px flex-1 bg-gradient-to-r from-cyan-500/50 to-transparent" />
       </div>
 
       {/* Textarea */}
@@ -78,7 +78,7 @@ export default function PromptPanel({ onGenerate, isLoading, scene, error }: Pro
           placeholder="A castle on a hill surrounded by enemy soldiers, with a moat and drawbridge, stormy sky and dramatic lighting..."
           disabled={isLoading}
           rows={6}
-          className="w-full bg-black/60 border border-cyan-500/30 rounded-lg px-4 py-3 text-sm font-mono text-cyan-100 placeholder-cyan-900 resize-none focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_20px_rgba(0,245,255,0.15)] transition-all duration-300 disabled:opacity-50 scrollbar-thin"
+          className="w-full bg-black/40 backdrop-blur-md border border-cyan-500/30 rounded-xl px-5 py-4 text-sm font-mono text-cyan-50 placeholder-cyan-800 resize-none focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_25px_rgba(0,245,255,0.25)] transition-all duration-300 disabled:opacity-50 scrollbar-thin"
         />
         <div
           className={`absolute bottom-3 right-3 text-xs font-mono ${
@@ -129,7 +129,7 @@ export default function PromptPanel({ onGenerate, isLoading, scene, error }: Pro
               key={p.id}
               onClick={() => handlePreset(p.prompt)}
               disabled={isLoading}
-              className="preset-btn text-xs font-mono py-2 px-3 text-left truncate disabled:opacity-40"
+              className="preset-btn text-xs font-mono py-3 px-4 text-left truncate disabled:opacity-40 rounded-lg hover:bg-cyan-500/10 hover:border-cyan-400/50 hover:shadow-[0_0_15px_rgba(0,245,255,0.2)] transition-all"
             >
               {p.label}
             </button>

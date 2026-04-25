@@ -1,9 +1,9 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// Use OPENROUTER_API_KEY if present, fallback to ANTHROPIC_API_KEY so we don't break existing setups
+const API_KEY = process.env.OPENROUTER_API_KEY || process.env.ANTHROPIC_API_KEY;
 
 const SYSTEM_PROMPT = `You are a 3D game scene data generator. Parse the user's description and return ONLY a valid JSON object. No markdown, no explanation, no code fences — just raw JSON.
 
@@ -65,18 +65,38 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid prompt' }, { status: 400 });
     }
 
+    if (!API_KEY) {
+      return NextResponse.json({ error: 'API key is missing' }, { status: 401 });
+    }
+
     const generateScene = async (strict = false) => {
       const strictAddendum = strict
         ? ' IMPORTANT: Return ONLY valid JSON. No other text whatsoever.'
         : '';
-      const msg = await client.messages.create({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 4096,
-        system: SYSTEM_PROMPT + strictAddendum,
-        messages: [{ role: 'user', content: `Create a 3D game scene: ${prompt}` }],
+        
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://cloudexify.site', 
+          'X-Title': 'AI Game Builder' 
+        },
+        body: JSON.stringify({
+          model: 'anthropic/claude-3.5-sonnet', // Automatically handled by OpenRouter
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT + strictAddendum },
+            { role: 'user', content: `Create a 3D game scene: ${prompt}` }
+          ]
+        })
       });
 
-      const text = msg.content[0].type === 'text' ? msg.content[0].text : '';
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error?.message || 'OpenRouter API Error');
+      }
+
+      const text = data.choices?.[0]?.message?.content || '';
       return extractJSON(text);
     };
 
