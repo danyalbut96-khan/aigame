@@ -17,7 +17,7 @@ JSON Schema (follow exactly):
     "objects": [
       {
         "id": "unique_id_string",
-        "type": "box|sphere|cylinder|cone|plane|castle|tree|rock|enemy|player|horse|sword|animal|plant",
+        "type": "box|sphere|cylinder|cone|plane|castle|tree|rock|enemy|player|horse|sword|animal|plant|building",
         "label": "Display Name",
         "position": [x, y, z],
         "rotation": [x, y, z],
@@ -38,7 +38,7 @@ Rules:
 - Y=0 for ground-level objects (enemies, trees, rocks, players, horses, animals).
 - texture field must be one of: "grass","sand","stone","wood","metal","lava","snow", or the string "null".
 - All rotation values are in degrees.
-- Return ONLY the JSON, nothing else.
+- Return ONLY the JSON, nothing else.\`;
 
 function extractJSON(text: string): string {
   // Strip markdown code blocks if present

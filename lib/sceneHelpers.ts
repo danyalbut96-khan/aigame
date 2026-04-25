@@ -301,6 +301,52 @@ function buildAnimalGroup(obj: SceneObject): THREE.Group {
   return group;
 }
 
+function buildBuildingGroup(obj: SceneObject): THREE.Group {
+  const group = new THREE.Group();
+  
+  // Base structure
+  const mat = buildMaterial(obj.color || '#333333', obj.texture || 'metal');
+  const height = obj.scale[1] > 2 ? obj.scale[1] : 6 + Math.random() * 4;
+  const geo = new THREE.BoxGeometry(2, height, 2);
+  const building = new THREE.Mesh(geo, mat);
+  building.position.set(0, height / 2, 0);
+  group.add(building);
+
+  // Add random neon or window accents if it's a dark color (for modern/neon city)
+  if (obj.color && obj.color !== '#ffffff' && obj.color !== '#000000') {
+    const accentMat = new THREE.MeshStandardMaterial({ 
+      color: obj.color, 
+      emissive: obj.color, 
+      emissiveIntensity: 1 
+    });
+    
+    // Add vertical neon strips
+    const stripGeo = new THREE.BoxGeometry(2.1, height, 0.1);
+    const strip = new THREE.Mesh(stripGeo, accentMat);
+    strip.position.set(0, height / 2, 0);
+    group.add(strip);
+  }
+
+  // Reset scale to 1 since we handle it in height, or let TransformControls handle it later
+  // Actually, better to just return the 1x1x1 base and let applyTransforms scale it up
+  // So let's make it standard 1x1x1 and it will scale automatically
+  const baseGroup = new THREE.Group();
+  const baseGeo = new THREE.BoxGeometry(1, 1, 1);
+  const baseMat = buildMaterial(obj.color || '#333333', obj.texture || 'metal');
+  const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+  baseMesh.position.set(0, 0.5, 0); // Origin at bottom
+  baseGroup.add(baseMesh);
+
+  // Neon strip
+  const nStripGeo = new THREE.BoxGeometry(1.05, 1, 0.05);
+  const nMat = new THREE.MeshStandardMaterial({ color: obj.color, emissive: obj.color, emissiveIntensity: 1 });
+  const nStrip = new THREE.Mesh(nStripGeo, nMat);
+  nStrip.position.set(0, 0.5, 0);
+  baseGroup.add(nStrip);
+
+  return baseGroup;
+}
+
 // ─── Main Object Builder ──────────────────────────────────────────────────────
 
 export function buildObject(obj: SceneObject): THREE.Object3D {
@@ -326,6 +372,9 @@ export function buildObject(obj: SceneObject): THREE.Object3D {
       break;
     case 'sword':
       mesh = buildSwordGroup(obj);
+      break;
+    case 'building':
+      mesh = buildBuildingGroup(obj);
       break;
     case 'sphere': {
       const geo = new THREE.SphereGeometry(0.5, 32, 32);

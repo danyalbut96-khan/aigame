@@ -14,7 +14,8 @@ export type ObjectType =
   | 'horse'
   | 'sword'
   | 'animal'
-  | 'plant';
+  | 'plant'
+  | 'building';
 
 export interface SceneObject {
   id: string;
